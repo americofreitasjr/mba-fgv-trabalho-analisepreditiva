@@ -1,4 +1,4 @@
-library(ggplot2)
+Ôªølibrary(ggplot2)
 #install.packages("dplyr")
 library(dplyr)
 #install.packages("glmnet")
@@ -17,9 +17,9 @@ library(caret)
 setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
 df = read.csv("data_tratada.csv")
 
-df <- df[,-1] #Tirar a coluna X - primeira coluna, que È sÛ um Ìndice
+df <- df[,-1] #Tirar a coluna X - primeira coluna, que √© s√≥ um √≠ndice
 
-#### An·lise Descritiva da vari·vel resposta JobSatisfaction
+#### An√°lise Descritiva da vari√°vel resposta JobSatisfaction
 hist(df$JobSatisfaction)
 boxplot(df$JobSatisfaction)
 
@@ -31,16 +31,16 @@ ind <- sample(1:nrow(df), size = .75*nrow(df), replace = F)
 training_set = df[ind,]
 test_set = df[-ind,]
 
-# Identificando as vari·veis com mais de 53 nÌveis (que a funÁ„o randomForest n„o aceita) 
+# Identificando as vari√°veis com mais de 53 n√≠veis (que a fun√ß√£o randomForest n√£o aceita) 
 ind_col <- NULL
 for (i in (1:ncol(training_set))) {
   ifelse(length(levels(training_set[,i]))<54,ind_col[i]<-TRUE,ind_col[i]<-FALSE)   
 }
 
-# base de treino sÛ com vari·veis preditoras
+# base de treino s√≥ com vari√°veis preditoras
 training_set_pred <- training_set[,-14]
 
-# Fazendo a floresta aleatÛria sÛ com as vari·veis preditoras que tenham menos de 53 nÌveis
+# Fazendo a floresta aleat√≥ria s√≥ com as vari√°veis preditoras que tenham menos de 53 n√≠veis
 set.seed(123)
 classifier = randomForest(x = training_set_pred[,which(ind_col[-14]==TRUE)],
                           y = training_set$JobSatisfaction,
@@ -57,15 +57,15 @@ plot(test_set[,14], y_pred)
 # Choosing the number of trees
 plot(classifier)
 
-# Escolhendo as vari·veis mais significativas, tendo como critÈrio diminuiÁ„o mÈdia na impureza dos nÛs (estatÌstica de Gini)
+# Escolhendo as vari√°veis mais significativas, tendo como crit√©rio diminui√ß√£o m√©dia na impureza dos n√≥s (estat√≠stica de Gini)
 varImpPlot(classifier)
 varImp
-# Tabela com o valor da estatÌstica de Gini em cada vari·vel
+# Tabela com o valor da estat√≠stica de Gini em cada vari√°vel
 importance_dat = data.frame(importance(classifier))
 View(importance_dat)
 
 #######LINEAR MODEL #####
-#Selecionadas (a princÌpio) as vari·veis com Ìndice de Gini > 60
+#Selecionadas (a princ√≠pio) as vari√°veis com √≠ndice de Gini > 60
 mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
          + YearsCodedJob + HoursPerWeek + MajorUndergrad
          #+ Currency 
@@ -82,11 +82,11 @@ mean((yhat-test_set$JobSatisfaction)^2)
 par(mfrow=c(2,2))
 hist(training_set$JobSatisfaction, main= "Job Satisfaction - Base de treino", col="lightblue")
 hist(test_set$JobSatisfaction, main= "Job Satisfaction - Base de teste", col="lightblue")
-hist(yhat, main= "Job Satisfaction - Previs„o na base de teste", col="lightblue")
-plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previs„o na base de teste")
+hist(yhat, main= "Job Satisfaction - Previs√£o na base de teste", col="lightblue")
+plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previs√£o na base de teste")
 
 # Model performance metrics
-#Erro mÈdio residual 
+#Erro m√©dio residual 
 RMSE = function(m, o){
   sqrt(mean((m - o)^2))
 }
@@ -108,14 +108,14 @@ y.treino <- df$JobSatisfaction[ind]
 x.teste <- x[-ind,]
 y.teste <- df$JobSatisfaction[-ind]
 
-# Escolha do grau de regularizaÁ„o (lambda)
+# Escolha do grau de regulariza√ß√£o (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=1)
 plot(cv.out)
 
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=1, lambda=cv.out$lambda.min)
 
-# vamos olhar os coeficientes deste modelo e erro no conjunto de validaÁ„o
+# vamos olhar os coeficientes deste modelo e erro no conjunto de valida√ß√£o
 predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 
 yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
@@ -124,8 +124,8 @@ mean((yhat-y.teste)^2)
 par(mfrow=c(2,2))
 hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
 hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
-hist(yhat, main= "Job Satisfaction - Previs„o na base de teste", col="lightblue")
-plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs„o na base de teste")
+hist(yhat, main= "Job Satisfaction - Previs√£o na base de teste", col="lightblue")
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs√£o na base de teste")
 
 # Model performance metrics
 data.frame(
@@ -134,14 +134,14 @@ data.frame(
 )
 
 #### RIDGE ###### (mesmo que o lasso mas com alpha = 0)
-# Escolha do grau de regularizaÁ„o (lambda)
+# Escolha do grau de regulariza√ß√£o (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=0)
 plot(cv.out)
 
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=0, lambda=cv.out$lambda.min)
 
-# vamos olhar os coeficientes deste modelo e erro no conjunto de validaÁ„o
+# vamos olhar os coeficientes deste modelo e erro no conjunto de valida√ß√£o
 predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 
 yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
@@ -150,8 +150,8 @@ mean((yhat-y.teste)^2)
 par(mfrow=c(2,2))
 hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
 hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
-hist(yhat, main= "Job Satisfaction - Previs„o na base de teste", col="lightblue")
-plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs„o na base de teste")
+hist(yhat, main= "Job Satisfaction - Previs√£o na base de teste", col="lightblue")
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs√£o na base de teste")
 
 # Model performance metrics
 data.frame(

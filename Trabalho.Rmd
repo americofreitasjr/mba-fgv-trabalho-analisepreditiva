@@ -1,9 +1,9 @@
----
+Ôªø---
 output:
   html_document: default
   pdf_document: default
 ---
-## Carregando as bibliotecas necess·rias para a an·lise do modelo
+## Carregando as bibliotecas necess√°rias para a an√°lise do modelo
 
 ```{r}
 library(ggplot2)
@@ -22,19 +22,19 @@ library(caret)
 ```
 
 
-## Carregando a base para an·lise
+## Carregando a base para an√°lise
 
 ```{r}
 setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
 df = read.csv("data_tratada.csv")
 
-#Retirando a coluna X - primeira coluna, que È apenas um Ìndice
+#Retirando a coluna X - primeira coluna, que √© apenas um √≠ndice
 df <- df[,-1] 
 ```
 
 
 
-## An·lise Descritiva da vari·vel resposta JobSatisfaction
+## An√°lise Descritiva da vari√°vel resposta JobSatisfaction
 ```{r}
 hist(df$JobSatisfaction)
 boxplot(df$JobSatisfaction)
@@ -50,16 +50,16 @@ ind <- sample(1:nrow(df), size = .75*nrow(df), replace = F)
 training_set = df[ind,]
 test_set = df[-ind,]
 
-# Identificando as vari·veis com mais de 53 nÌveis (que a funÁ„o randomForest n„o aceita) 
+# Identificando as vari√°veis com mais de 53 n√≠veis (que a fun√ß√£o randomForest n√£o aceita) 
 ind_col <- NULL
 for (i in (1:ncol(training_set))) {
   ifelse(length(levels(training_set[,i]))<54,ind_col[i]<-TRUE,ind_col[i]<-FALSE)   
 }
 
-# base de treino sÛ com vari·veis preditoras
+# base de treino s√≥ com vari√°veis preditoras
 training_set_pred <- training_set[,-14]
 
-# Fazendo a floresta aleatÛria sÛ com as vari·veis preditoras que tenham menos de 53 nÌveis
+# Fazendo a floresta aleat√≥ria s√≥ com as vari√°veis preditoras que tenham menos de 53 n√≠veis
 set.seed(123)
 classifier = randomForest(x = training_set_pred[,which(ind_col[-14]==TRUE)],
                           y = training_set$JobSatisfaction,
@@ -79,12 +79,12 @@ plot(test_set[,14], y_pred)
 plot(classifier)
 ```
 
-## Escolhendo as vari·veis mais significativas, tendo como critÈrio diminuiÁ„o mÈdia na impureza dos nÛs (estatÌstica de Gini)
+## Escolhendo as vari√°veis mais significativas, tendo como crit√©rio diminui√ß√£o m√©dia na impureza dos n√≥s (estat√≠stica de Gini)
 
 ```{r}
 varImpPlot(classifier)
 #varImp
-# Tabela com o valor da estatÌstica de Gini em cada vari·vel
+# Tabela com o valor da estat√≠stica de Gini em cada vari√°vel
 importance_dat = data.frame(importance(classifier))
 View(importance_dat)
 ```
@@ -92,7 +92,7 @@ View(importance_dat)
 
 ## ##### LINEAR MODEL #####
 ```{r}
-#Selecionadas (a princÌpio) as vari·veis com Ìndice de Gini > 60
+#Selecionadas (a princ√≠pio) as vari√°veis com √≠ndice de Gini > 60
 mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
          + YearsCodedJob + HoursPerWeek + MajorUndergrad
          #+ Currency 
@@ -117,18 +117,18 @@ hist(test_set$JobSatisfaction, main= "Job Satisfaction - Base de teste", col="li
 ```
 
 ```{r}
-hist(yhat, main= "Job Satisfaction - Previs„o na base de teste", col="lightblue")
+hist(yhat, main= "Job Satisfaction - Previs√£o na base de teste", col="lightblue")
 ```
 
 ```{r}
-plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previs„o na base de teste")
+plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previs√£o na base de teste")
 ```
 
 ## Model performance metrics
 
 
 ```{r}
-#Erro mÈdio residual 
+#Erro m√©dio residual 
 RMSE = function(m, o){
   sqrt(mean((m - o)^2))
 }
@@ -146,7 +146,7 @@ data.frame(
 
 ## #####LASSO##### (glmnet com alpha =1)
 ```{r}
-#Erro mÈdio residual 
+#Erro m√©dio residual 
 # Definindo base de teste e treino no formato pedido pelo glmnet
 x <- model.matrix(JobSatisfaction ~ .,df)[,-1]
 x.treino <- x[ind,]
@@ -154,7 +154,7 @@ y.treino <- df$JobSatisfaction[ind]
 x.teste <- x[-ind,]
 y.teste <- df$JobSatisfaction[-ind]
 
-# Escolha do grau de regularizaÁ„o (lambda)
+# Escolha do grau de regulariza√ß√£o (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=1)
 plot(cv.out)
 ```
@@ -164,7 +164,7 @@ plot(cv.out)
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=1, lambda=cv.out$lambda.min)
 
-# vamos olhar os coeficientes deste modelo e erro no conjunto de validaÁ„o
+# vamos olhar os coeficientes deste modelo e erro no conjunto de valida√ß√£o
 predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 
 ```
@@ -188,13 +188,13 @@ hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
 
 
 ```{r}
-hist(yhat, main= "Job Satisfaction - Previs„o na base de teste", col="lightblue")
+hist(yhat, main= "Job Satisfaction - Previs√£o na base de teste", col="lightblue")
 ```
 
 
 
 ```{r}
-plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs„o na base de teste")
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs√£o na base de teste")
 ```
 
 
@@ -210,7 +210,7 @@ data.frame(
 #### RIDGE ###### (mesmo que o lasso mas com alpha = 0)
 
 ```{r}
-# Escolha do grau de regularizaÁ„o (lambda)
+# Escolha do grau de regulariza√ß√£o (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=0)
 plot(cv.out)
 ```
@@ -222,7 +222,7 @@ plot(cv.out)
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=0, lambda=cv.out$lambda.min)
 
-# vamos olhar os coeficientes deste modelo e erro no conjunto de validaÁ„o
+# vamos olhar os coeficientes deste modelo e erro no conjunto de valida√ß√£o
 predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 ```
 
@@ -245,12 +245,12 @@ hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
 
 
 ```{r}
-hist(yhat, main= "Job Satisfaction - Previs„o na base de teste", col="lightblue")
+hist(yhat, main= "Job Satisfaction - Previs√£o na base de teste", col="lightblue")
 ```
 
 
 ```{r}
-plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs„o na base de teste")
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previs√£o na base de teste")
 ```
 
 
