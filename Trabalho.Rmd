@@ -1,8 +1,11 @@
-﻿---
+---
 output:
   html_document: default
   pdf_document: default
 ---
+
+
+
 ## Carregando as bibliotecas necessárias para a análise do modelo
 
 ```{r}
@@ -22,29 +25,41 @@ library(caret)
 ```
 
 
-## Carregando a base para análise
+## Carregando e tratando a base que será analisada
+
+### Fonte dos dados + https://github.com/alsombra/MBA-Machine_Learning
 
 ```{r}
-setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
+setwd("C:/Users/ameri/source/repos/github/americofreitasjr/mba-fgv-trabalho-analisepreditiva")
 df = read.csv("data_tratada.csv")
 
 #Retirando a coluna X - primeira coluna, que é apenas um índice
 df <- df[,-1] 
+
 ```
 
-
-
 ## Análise Descritiva da variável resposta JobSatisfaction
+
+### A satisfação não está distribuida normalmente, mostrando uma concentração de satisfação entre 6 e 8
+
 ```{r}
-hist(df$JobSatisfaction)
+hist(df$JobSatisfaction, main = "Distribuição - JobSatisfaction")
+```
+
+### O boxplot mostra um outlier, que neste caso não representará um problema para o modelo
+
+```{r}
 boxplot(df$JobSatisfaction)
 ```
 
+## Classificação Floresta Aleatória
 
-## Random Forest Classification
+### Nesta etapa estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
+
+
 ```{r}
 
-# Splitting the dataset into the Training set and Test set
+# Dividindo o conjunto de dados no conjunto de treinamento e no conjunto de teste
 set.seed(123)
 ind <- sample(1:nrow(df), size = .75*nrow(df), replace = F)
 training_set = df[ind,]
@@ -65,19 +80,23 @@ classifier = randomForest(x = training_set_pred[,which(ind_col[-14]==TRUE)],
                           y = training_set$JobSatisfaction,
                           ntree = 100)
 
-# Predicting the Test set results
+# Previsão dos resultados de teste
 y_pred = predict(classifier, newdata = test_set)
 
-# Making the Confusion Matrix
+# Fazendo a matriz de confusão
 cm = table(test_set[,14], y_pred)
 cm_dat = data.frame(cm)
 plot(test_set[,14], y_pred)
 ```
 
-# Choosing the number of trees
+### Escolhendo o número de árvores
+
+## Ao avaliar o númrero de árvores, identificamos que a partir dos 40 níveis o modelo não tem uma melhora na performance
+
 ```{r}
 plot(classifier)
 ```
+
 
 ## Escolhendo as variáveis mais significativas, tendo como critério diminuição média na impureza dos nós (estatística de Gini)
 
@@ -90,7 +109,9 @@ View(importance_dat)
 ```
 
 
-## ##### LINEAR MODEL #####
+## Modelo Linear
+
+
 ```{r}
 #Selecionadas (a princípio) as variáveis com índice de Gini > 60
 mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
@@ -107,32 +128,40 @@ yhat <- predict(mod, test_set)
 mean((yhat-test_set$JobSatisfaction)^2)
 ```
 
+
+### Job Satisfaction - Base de treino
+
 ```{r}
-par(mfrow=c(2,2))
+#par(mfrow=c(2,2))
 hist(training_set$JobSatisfaction, main= "Job Satisfaction - Base de treino", col="lightblue")
 ```
+
+### Job Satisfaction - Base de teste
 
 ```{r}
 hist(test_set$JobSatisfaction, main= "Job Satisfaction - Base de teste", col="lightblue")
 ```
 
+### Job Satisfaction - Previsão na base de teste
+
 ```{r}
 hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
 ```
+### Job Satisfaction - Base de teste vs Previsão na base de teste
 
 ```{r}
 plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 ```
 
-## Model performance metrics
+### Métricas de desempenho do modelo
 
+#### O erro médio residual e o R2
 
 ```{r}
 #Erro médio residual 
 RMSE = function(m, o){
   sqrt(mean((m - o)^2))
 }
-
 #R2
 R2 <- function (x, y) cor(x, y) ^ 2
 
@@ -144,7 +173,8 @@ data.frame(
 ```
 
 
-## #####LASSO##### (glmnet com alpha =1)
+## Modelo LASSO (glmnet com alpha =1)
+
 ```{r}
 #Erro médio residual 
 # Definindo base de teste e treino no formato pedido pelo glmnet
@@ -160,12 +190,18 @@ plot(cv.out)
 ```
 
 
+### Coeficientes deste modelo e erro no conjunto de validação
+
+
 ```{r}
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=1, lambda=cv.out$lambda.min)
 
 # vamos olhar os coeficientes deste modelo e erro no conjunto de validação
-predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
+resultPredict <- predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
+#resultPredict
+head(resultPredict)
+
 
 ```
 
@@ -176,21 +212,30 @@ mean((yhat-y.teste)^2)
 ```
 
 
+### Job Satisfaction - Base de treino
+
+
 ```{r}
-par(mfrow=c(2,2))
+#par(mfrow=c(2,2))
 hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
 ```
 
+
+### Job Satisfaction - Base de teste
 
 ```{r}
 hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
 ```
 
 
+### Job Satisfaction - Previsão na base de teste
+
 ```{r}
 hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
 ```
 
+
+### Job Satisfaction - Base de teste vs Previsão na base de teste
 
 
 ```{r}
@@ -207,7 +252,9 @@ data.frame(
 ```
 
 
-#### RIDGE ###### (mesmo que o lasso mas com alpha = 0)
+## Modelo RIDGE (mesmo que o lasso mas com alpha = 0)
+
+### Escolha do grau de regularização (lambda)
 
 ```{r}
 # Escolha do grau de regularização (lambda)
@@ -216,14 +263,15 @@ plot(cv.out)
 ```
 
 
-## -------------------------------------------------------------------------------------------------------------------
+### Analisando os coeficientes deste modelo e erro no conjunto de validação
 
 ```{r}
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=0, lambda=cv.out$lambda.min)
 
 # vamos olhar os coeficientes deste modelo e erro no conjunto de validação
-predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
+resultPredict <- predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
+head(resultPredict)
 ```
 
 
@@ -232,27 +280,35 @@ yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
 mean((yhat-y.teste)^2)
 ```
 
+### Job Satisfaction - Base de treino
 
 ```{r}
-par(mfrow=c(2,2))
+#par(mfrow=c(2,2))
 hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
 ```
 
+
+### Job Satisfaction - Base de teste
 
 ```{r}
 hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
 ```
 
 
+### Job Satisfaction - Previsão na base de teste
+
 ```{r}
 hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
 ```
+
+### Job Satisfaction - Base de teste vs Previsão na base de teste
 
 
 ```{r}
 plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 ```
 
+### Métricas de desempenho do modelo
 
 ```{r}
 # Model performance metrics

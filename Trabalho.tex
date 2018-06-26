@@ -1,0 +1,660 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{}
+    \pretitle{\vspace{\droptitle}}
+  \posttitle{}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+
+\subsection{Carregando as bibliotecas necessárias para a análise do
+modelo}\label{carregando-as-bibliotecas-necessarias-para-a-analise-do-modelo}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\CommentTok{#install.packages("dplyr")}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#install.packages("glmnet")}
+\KeywordTok{library}\NormalTok{(glmnet)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: Matrix
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: foreach
+\end{verbatim}
+
+\begin{verbatim}
+## Loaded glmnet 2.0-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#install.packages("ISLR")}
+\KeywordTok{library}\NormalTok{(ISLR)}
+\CommentTok{#install.packages("caTools")}
+\KeywordTok{library}\NormalTok{(caTools)}
+\CommentTok{#install.packages("randomForest")}
+\KeywordTok{library}\NormalTok{(randomForest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## randomForest 4.6-14
+\end{verbatim}
+
+\begin{verbatim}
+## Type rfNews() to see new features/changes/bug fixes.
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'randomForest'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     combine
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:ggplot2':
+## 
+##     margin
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#install.packages("caret")}
+\KeywordTok{library}\NormalTok{(caret)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: lattice
+\end{verbatim}
+
+\subsection{Carregando e tratando a base que será
+analisada}\label{carregando-e-tratando-a-base-que-sera-analisada}
+
+\subsubsection{\texorpdfstring{Fonte dos dados +
+\url{https://github.com/alsombra/MBA-Machine_Learning}}{Fonte dos dados + https://github.com/alsombra/MBA-Machine\_Learning}}\label{fonte-dos-dados-httpsgithub.comalsombramba-machine_learning}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"C:/Users/ameri/source/repos/github/americofreitasjr/mba-fgv-trabalho-analisepreditiva"}\NormalTok{)}
+\NormalTok{df =}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"data_tratada.csv"}\NormalTok{)}
+
+\CommentTok{#Retirando a coluna X - primeira coluna, que é apenas um índice}
+\NormalTok{df <-}\StringTok{ }\NormalTok{df[,}\OperatorTok{-}\DecValTok{1}\NormalTok{] }
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Análise Descritiva da variável resposta
+JobSatisfaction}\label{analise-descritiva-da-variavel-resposta-jobsatisfaction}
+
+\subsubsection{A satisfação não está distribuida normalmente, mostrando
+uma concentração de satisfação entre 6 e
+8}\label{a-satisfacao-nao-esta-distribuida-normalmente-mostrando-uma-concentracao-de-satisfacao-entre-6-e-8}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df}\OperatorTok{$}\NormalTok{JobSatisfaction, }\DataTypeTok{main =} \StringTok{"Distribuição - JobSatisfaction"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\subsubsection{O boxplot mostra um outlier, que neste caso não
+representará um problema para o
+modelo}\label{o-boxplot-mostra-um-outlier-que-neste-caso-nao-representara-um-problema-para-o-modelo}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(df}\OperatorTok{$}\NormalTok{JobSatisfaction)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\subsection{Classificação Floresta
+Aleatória}\label{classificacao-floresta-aleatoria}
+
+\subsubsection{Nesta etapa estamos separando de maneira aleatória os
+dados de treio e teste, e posteriormente aplicando o randonForest para
+selecionar as variáveis mais releventes. Durante o processo
+identificamos que o randonForest não aceita mais de 53 níveis de
+classificação, porém aceitamos que a acurácia do resultado não seria
+relevantemente afetada com apenas os 53 níveis, e prosseguimos com o
+modelo de
+treino.}\label{nesta-etapa-estamos-separando-de-maneira-aleatoria-os-dados-de-treio-e-teste-e-posteriormente-aplicando-o-randonforest-para-selecionar-as-variaveis-mais-releventes.-durante-o-processo-identificamos-que-o-randonforest-nao-aceita-mais-de-53-niveis-de-classificacao-porem-aceitamos-que-a-acuracia-do-resultado-nao-seria-relevantemente-afetada-com-apenas-os-53-niveis-e-prosseguimos-com-o-modelo-de-treino.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Dividindo o conjunto de dados no conjunto de treinamento e no conjunto de teste}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{ind <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{nrow}\NormalTok{(df), }\DataTypeTok{size =}\NormalTok{ .}\DecValTok{75}\OperatorTok{*}\KeywordTok{nrow}\NormalTok{(df), }\DataTypeTok{replace =}\NormalTok{ F)}
+\NormalTok{training_set =}\StringTok{ }\NormalTok{df[ind,]}
+\NormalTok{test_set =}\StringTok{ }\NormalTok{df[}\OperatorTok{-}\NormalTok{ind,]}
+
+\CommentTok{# Identificando as variáveis com mais de 53 níveis (que a função randomForest não aceita) }
+\NormalTok{ind_col <-}\StringTok{ }\OtherTok{NULL}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ (}\DecValTok{1}\OperatorTok{:}\KeywordTok{ncol}\NormalTok{(training_set))) \{}
+  \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{length}\NormalTok{(}\KeywordTok{levels}\NormalTok{(training_set[,i]))}\OperatorTok{<}\DecValTok{54}\NormalTok{,ind_col[i]<-}\OtherTok{TRUE}\NormalTok{,ind_col[i]<-}\OtherTok{FALSE}\NormalTok{)   }
+\NormalTok{\}}
+
+\CommentTok{# base de treino só com variáveis preditoras}
+\NormalTok{training_set_pred <-}\StringTok{ }\NormalTok{training_set[,}\OperatorTok{-}\DecValTok{14}\NormalTok{]}
+
+\CommentTok{# Fazendo a floresta aleatória só com as variáveis preditoras que tenham menos de 53 níveis}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{classifier =}\StringTok{ }\KeywordTok{randomForest}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ training_set_pred[,}\KeywordTok{which}\NormalTok{(ind_col[}\OperatorTok{-}\DecValTok{14}\NormalTok{]}\OperatorTok{==}\OtherTok{TRUE}\NormalTok{)],}
+                          \DataTypeTok{y =}\NormalTok{ training_set}\OperatorTok{$}\NormalTok{JobSatisfaction,}
+                          \DataTypeTok{ntree =} \DecValTok{100}\NormalTok{)}
+
+\CommentTok{# Previsão dos resultados de teste}
+\NormalTok{y_pred =}\StringTok{ }\KeywordTok{predict}\NormalTok{(classifier, }\DataTypeTok{newdata =}\NormalTok{ test_set)}
+
+\CommentTok{# Fazendo a matriz de confusão}
+\NormalTok{cm =}\StringTok{ }\KeywordTok{table}\NormalTok{(test_set[,}\DecValTok{14}\NormalTok{], y_pred)}
+\NormalTok{cm_dat =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(cm)}
+\KeywordTok{plot}\NormalTok{(test_set[,}\DecValTok{14}\NormalTok{], y_pred)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\subsubsection{Escolhendo o número de
+árvores}\label{escolhendo-o-numero-de-arvores}
+
+\subsection{Ao avaliar o númrero de árvores, identificamos que a partir
+dos 40 níveis o modelo não tem uma melhora na
+performance}\label{ao-avaliar-o-numrero-de-arvores-identificamos-que-a-partir-dos-40-niveis-o-modelo-nao-tem-uma-melhora-na-performance}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(classifier)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\subsection{Escolhendo as variáveis mais significativas, tendo como
+critério diminuição média na impureza dos nós (estatística de
+Gini)}\label{escolhendo-as-variaveis-mais-significativas-tendo-como-criterio-diminuicao-media-na-impureza-dos-nos-estatistica-de-gini}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{varImpPlot}\NormalTok{(classifier)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#varImp}
+\CommentTok{# Tabela com o valor da estatística de Gini em cada variável}
+\NormalTok{importance_dat =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{importance}\NormalTok{(classifier))}
+\KeywordTok{View}\NormalTok{(importance_dat)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Modelo Linear}\label{modelo-linear}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Selecionadas (a princípio) as variáveis com índice de Gini > 60}
+\NormalTok{mod =}\StringTok{ }\KeywordTok{lm}\NormalTok{(JobSatisfaction }\OperatorTok{~}\StringTok{ }\NormalTok{CareerSatisfaction }\OperatorTok{+}\StringTok{ }\NormalTok{JobSeekingStatus }\OperatorTok{+}\StringTok{ }\NormalTok{YearsProgram}
+         \OperatorTok{+}\StringTok{ }\NormalTok{YearsCodedJob }\OperatorTok{+}\StringTok{ }\NormalTok{HoursPerWeek }\OperatorTok{+}\StringTok{ }\NormalTok{MajorUndergrad}
+         \CommentTok{#+ Currency }
+         \OperatorTok{+}\StringTok{ }\NormalTok{CompanySize}
+         \CommentTok{#+ WorkStart}
+         \OperatorTok{+}\StringTok{ }\NormalTok{ResumePrompted }\OperatorTok{+}\StringTok{ }\NormalTok{CompanyType }\OperatorTok{+}\StringTok{ }\NormalTok{HighestEducationParents}
+         \OperatorTok{+}\StringTok{ }\NormalTok{InfluenceWorkstation }\OperatorTok{+}\StringTok{ }\NormalTok{Overpaid }\OperatorTok{+}\StringTok{ }\NormalTok{HomeRemote,}
+         \DataTypeTok{data=}\NormalTok{training_set)}
+\CommentTok{#print(mod)}
+\CommentTok{#summary(mod)}
+\NormalTok{yhat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(mod, test_set)}
+\KeywordTok{mean}\NormalTok{((yhat}\OperatorTok{-}\NormalTok{test_set}\OperatorTok{$}\NormalTok{JobSatisfaction)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.686845
+\end{verbatim}
+
+\subsubsection{Job Satisfaction - Base de
+treino}\label{job-satisfaction---base-de-treino}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(training_set}\OperatorTok{$}\NormalTok{JobSatisfaction, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de treino"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\subsubsection{Job Satisfaction - Base de
+teste}\label{job-satisfaction---base-de-teste}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(test_set}\OperatorTok{$}\NormalTok{JobSatisfaction, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de teste"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\subsubsection{Job Satisfaction - Previsão na base de
+teste}\label{job-satisfaction---previsao-na-base-de-teste}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(yhat, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Previsão na base de teste"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-11-1.pdf}
+\#\#\# Job Satisfaction - Base de teste vs Previsão na base de teste
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(test_set}\OperatorTok{$}\NormalTok{JobSatisfaction, yhat, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de teste vs Previsão na base de teste"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\subsubsection{Métricas de desempenho do
+modelo}\label{metricas-de-desempenho-do-modelo}
+
+\paragraph{O erro médio residual e o
+R2}\label{o-erro-medio-residual-e-o-r2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Erro médio residual }
+\NormalTok{RMSE =}\StringTok{ }\ControlFlowTok{function}\NormalTok{(m, o)\{}
+  \KeywordTok{sqrt}\NormalTok{(}\KeywordTok{mean}\NormalTok{((m }\OperatorTok{-}\StringTok{ }\NormalTok{o)}\OperatorTok{^}\DecValTok{2}\NormalTok{))}
+\NormalTok{\}}
+\CommentTok{#R2}
+\NormalTok{R2 <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{ (x, y) }\KeywordTok{cor}\NormalTok{(x, y) }\OperatorTok{^}\StringTok{ }\DecValTok{2}
+
+\KeywordTok{data.frame}\NormalTok{(}
+  \DataTypeTok{RMSE =} \KeywordTok{RMSE}\NormalTok{(yhat, test_set}\OperatorTok{$}\NormalTok{JobSatisfaction),}
+  \DataTypeTok{Rsquare =} \KeywordTok{R2}\NormalTok{(yhat, test_set}\OperatorTok{$}\NormalTok{JobSatisfaction)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      RMSE   Rsquare
+## 1 1.63916 0.3701806
+\end{verbatim}
+
+\subsection{Modelo LASSO (glmnet com alpha
+=1)}\label{modelo-lasso-glmnet-com-alpha-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Erro médio residual }
+\CommentTok{# Definindo base de teste e treino no formato pedido pelo glmnet}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(JobSatisfaction }\OperatorTok{~}\StringTok{ }\NormalTok{.,df)[,}\OperatorTok{-}\DecValTok{1}\NormalTok{]}
+\NormalTok{x.treino <-}\StringTok{ }\NormalTok{x[ind,]}
+\NormalTok{y.treino <-}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{JobSatisfaction[ind]}
+\NormalTok{x.teste <-}\StringTok{ }\NormalTok{x[}\OperatorTok{-}\NormalTok{ind,]}
+\NormalTok{y.teste <-}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{JobSatisfaction[}\OperatorTok{-}\NormalTok{ind]}
+
+\CommentTok{# Escolha do grau de regularização (lambda)}
+\NormalTok{cv.out <-}\StringTok{ }\KeywordTok{cv.glmnet}\NormalTok{(x.treino, y.treino, }\DataTypeTok{alpha=}\DecValTok{1}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(cv.out)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Modelo}
+\NormalTok{lasso.mod=}\KeywordTok{glmnet}\NormalTok{(}\DataTypeTok{x=}\NormalTok{x.treino, }\DataTypeTok{y=}\NormalTok{y.treino, }\DataTypeTok{alpha=}\DecValTok{1}\NormalTok{, }\DataTypeTok{lambda=}\NormalTok{cv.out}\OperatorTok{$}\NormalTok{lambda.min)}
+
+\CommentTok{# vamos olhar os coeficientes deste modelo e erro no conjunto de validação}
+\NormalTok{resultPredict <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(lasso.mod, }\DataTypeTok{s=}\NormalTok{ cv.out}\OperatorTok{$}\NormalTok{lambda.min , }\DataTypeTok{type=}\StringTok{"coefficients"}\NormalTok{)}
+\CommentTok{#resultPredict}
+\KeywordTok{head}\NormalTok{(resultPredict)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 6 x 1 sparse Matrix of class "dgCMatrix"
+##                                                              1
+## (Intercept)                                           2.896908
+## ProgramHobbyYes, both                                 .       
+## ProgramHobbyYes, I contribute to open source projects .       
+## ProgramHobbyYes, I program as a hobby                 .       
+## CountryArgentina                                      .       
+## CountryArmenia                                        .
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yhat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(lasso.mod, }\DataTypeTok{s =}\NormalTok{ cv.out}\OperatorTok{$}\NormalTok{lambda.min, }\DataTypeTok{type=}\StringTok{"response"}\NormalTok{, }\DataTypeTok{newx=}\NormalTok{x.teste)}
+\KeywordTok{mean}\NormalTok{((yhat}\OperatorTok{-}\NormalTok{y.teste)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.522256
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(y.treino, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de treino"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(y.teste, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de teste"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(yhat, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Previsão na base de teste"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(y.teste, yhat, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de teste vs Previsão na base de teste"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Model performance metrics}
+\KeywordTok{data.frame}\NormalTok{(}
+  \DataTypeTok{RMSE =} \KeywordTok{RMSE}\NormalTok{(yhat, y.teste),}
+  \DataTypeTok{Rsquare =} \KeywordTok{R2}\NormalTok{(yhat, y.teste)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       RMSE   Rsquare
+## 1 1.588161 0.4079989
+\end{verbatim}
+
+\subsection{Modelo RIDGE (mesmo que o lasso mas com alpha =
+0)}\label{modelo-ridge-mesmo-que-o-lasso-mas-com-alpha-0}
+
+\subsubsection{Escolha do grau de regularização
+(lambda)}\label{escolha-do-grau-de-regularizacao-lambda}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Escolha do grau de regularização (lambda)}
+\NormalTok{cv.out <-}\StringTok{ }\KeywordTok{cv.glmnet}\NormalTok{(x.treino, y.treino, }\DataTypeTok{alpha=}\DecValTok{0}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(cv.out)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\subsubsection{Analisando os coeficientes deste modelo e erro no
+conjunto de
+validação}\label{analisando-os-coeficientes-deste-modelo-e-erro-no-conjunto-de-validacao}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Modelo}
+\NormalTok{lasso.mod=}\KeywordTok{glmnet}\NormalTok{(}\DataTypeTok{x=}\NormalTok{x.treino, }\DataTypeTok{y=}\NormalTok{y.treino, }\DataTypeTok{alpha=}\DecValTok{0}\NormalTok{, }\DataTypeTok{lambda=}\NormalTok{cv.out}\OperatorTok{$}\NormalTok{lambda.min)}
+
+\CommentTok{# vamos olhar os coeficientes deste modelo e erro no conjunto de validação}
+\NormalTok{resultPredict <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(lasso.mod, }\DataTypeTok{s=}\NormalTok{ cv.out}\OperatorTok{$}\NormalTok{lambda.min , }\DataTypeTok{type=}\StringTok{"coefficients"}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(resultPredict)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 6 x 1 sparse Matrix of class "dgCMatrix"
+##                                                                 1
+## (Intercept)                                            5.62784232
+## ProgramHobbyYes, both                                  0.01553087
+## ProgramHobbyYes, I contribute to open source projects  0.04225209
+## ProgramHobbyYes, I program as a hobby                 -0.01091579
+## CountryArgentina                                       0.02457481
+## CountryArmenia                                        -0.15085632
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yhat <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(lasso.mod, }\DataTypeTok{s =}\NormalTok{ cv.out}\OperatorTok{$}\NormalTok{lambda.min, }\DataTypeTok{type=}\StringTok{"response"}\NormalTok{, }\DataTypeTok{newx=}\NormalTok{x.teste)}
+\KeywordTok{mean}\NormalTok{((yhat}\OperatorTok{-}\NormalTok{y.teste)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3.554289
+\end{verbatim}
+
+\subsubsection{Job Satisfaction - Base de
+treino}\label{job-satisfaction---base-de-treino-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(y.treino, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de treino"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-25-1.pdf}
+
+\subsubsection{Job Satisfaction - Base de
+teste}\label{job-satisfaction---base-de-teste-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(y.teste, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de teste"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-26-1.pdf}
+
+\subsubsection{Job Satisfaction - Previsão na base de
+teste}\label{job-satisfaction---previsao-na-base-de-teste-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(yhat, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Previsão na base de teste"}\NormalTok{, }\DataTypeTok{col=}\StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+\subsubsection{Job Satisfaction - Base de teste vs Previsão na base de
+teste}\label{job-satisfaction---base-de-teste-vs-previsao-na-base-de-teste}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(y.teste, yhat, }\DataTypeTok{main=} \StringTok{"Job Satisfaction - Base de teste vs Previsão na base de teste"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabalho_files/figure-latex/unnamed-chunk-28-1.pdf}
+
+\subsubsection{Métricas de desempenho do
+modelo}\label{metricas-de-desempenho-do-modelo-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Model performance metrics}
+\KeywordTok{data.frame}\NormalTok{(}
+  \DataTypeTok{RMSE =} \KeywordTok{RMSE}\NormalTok{(yhat, y.teste),}
+  \DataTypeTok{Rsquare =} \KeywordTok{R2}\NormalTok{(yhat, y.teste)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       RMSE   Rsquare
+## 1 1.885282 0.2001939
+\end{verbatim}
+
+
+\end{document}
