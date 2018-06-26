@@ -1,3 +1,11 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+## Carregando as bibliotecas necessárias para a análise do modelo
+
+```{r}
 library(ggplot2)
 #install.packages("dplyr")
 library(dplyr)
@@ -11,23 +19,34 @@ library(caTools)
 library(randomForest)
 #install.packages("caret")
 library(caret)
+```
 
 
-#### carrego base ### 
+## Carregando a base para análise
+
+```{r}
 setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
 df = read.csv("data_tratada.csv")
 
-df <- df[,-1] #Tirar a coluna X - primeira coluna, que é só um índice
+#Retirando a coluna X - primeira coluna, que é apenas um índice
+df <- df[,-1] 
+```
 
-#### Análise Descritiva da variável resposta JobSatisfaction
+
+
+## Análise Descritiva da variável resposta JobSatisfaction
+```{r}
 hist(df$JobSatisfaction)
 boxplot(df$JobSatisfaction)
+```
 
-#### Random Forest Classification
+
+## Random Forest Classification
+```{r}
+
 # Splitting the dataset into the Training set and Test set
 set.seed(123)
 ind <- sample(1:nrow(df), size = .75*nrow(df), replace = F)
-#split = sample.split(df$JobSatisfaction, SplitRatio = 0.75)
 training_set = df[ind,]
 test_set = df[-ind,]
 
@@ -53,18 +72,26 @@ y_pred = predict(classifier, newdata = test_set)
 cm = table(test_set[,14], y_pred)
 cm_dat = data.frame(cm)
 plot(test_set[,14], y_pred)
+```
 
 # Choosing the number of trees
+```{r}
 plot(classifier)
+```
 
-# Escolhendo as variáveis mais significativas, tendo como critério diminuição média na impureza dos nós (estatística de Gini)
+## Escolhendo as variáveis mais significativas, tendo como critério diminuição média na impureza dos nós (estatística de Gini)
+
+```{r}
 varImpPlot(classifier)
-varImp
+#varImp
 # Tabela com o valor da estatística de Gini em cada variável
 importance_dat = data.frame(importance(classifier))
 View(importance_dat)
+```
 
-#######LINEAR MODEL #####
+
+## ##### LINEAR MODEL #####
+```{r}
 #Selecionadas (a princípio) as variáveis com índice de Gini > 60
 mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
          + YearsCodedJob + HoursPerWeek + MajorUndergrad
@@ -74,18 +101,33 @@ mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
          + ResumePrompted + CompanyType + HighestEducationParents
          + InfluenceWorkstation + Overpaid + HomeRemote,
          data=training_set)
-print(mod)
-summary(mod)
+#print(mod)
+#summary(mod)
 yhat <- predict(mod, test_set)
 mean((yhat-test_set$JobSatisfaction)^2)
+```
 
+```{r}
 par(mfrow=c(2,2))
 hist(training_set$JobSatisfaction, main= "Job Satisfaction - Base de treino", col="lightblue")
-hist(test_set$JobSatisfaction, main= "Job Satisfaction - Base de teste", col="lightblue")
-hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
-plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
+```
 
-# Model performance metrics
+```{r}
+hist(test_set$JobSatisfaction, main= "Job Satisfaction - Base de teste", col="lightblue")
+```
+
+```{r}
+hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
+```
+
+```{r}
+plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
+```
+
+## Model performance metrics
+
+
+```{r}
 #Erro médio residual 
 RMSE = function(m, o){
   sqrt(mean((m - o)^2))
@@ -99,8 +141,12 @@ data.frame(
   Rsquare = R2(yhat, test_set$JobSatisfaction)
 )
 
-#####LASSO##### (glmnet com alpha =1)
+```
 
+
+## #####LASSO##### (glmnet com alpha =1)
+```{r}
+#Erro médio residual 
 # Definindo base de teste e treino no formato pedido pelo glmnet
 x <- model.matrix(JobSatisfaction ~ .,df)[,-1]
 x.treino <- x[ind,]
@@ -111,50 +157,107 @@ y.teste <- df$JobSatisfaction[-ind]
 # Escolha do grau de regularização (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=1)
 plot(cv.out)
+```
 
+
+```{r}
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=1, lambda=cv.out$lambda.min)
 
 # vamos olhar os coeficientes deste modelo e erro no conjunto de validação
 predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 
+```
+
+
+```{r}
 yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
 mean((yhat-y.teste)^2)
+```
 
+
+```{r}
 par(mfrow=c(2,2))
 hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
-hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
-hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
-plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
+```
 
+
+```{r}
+hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
+```
+
+
+```{r}
+hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
+```
+
+
+
+```{r}
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
+```
+
+
+```{r}
 # Model performance metrics
 data.frame(
   RMSE = RMSE(yhat, y.teste),
   Rsquare = R2(yhat, y.teste)
 )
+```
+
 
 #### RIDGE ###### (mesmo que o lasso mas com alpha = 0)
+
+```{r}
 # Escolha do grau de regularização (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=0)
 plot(cv.out)
+```
 
+
+## -------------------------------------------------------------------------------------------------------------------
+
+```{r}
 # Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=0, lambda=cv.out$lambda.min)
 
 # vamos olhar os coeficientes deste modelo e erro no conjunto de validação
 predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
+```
 
+
+```{r}
 yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
 mean((yhat-y.teste)^2)
+```
 
+
+```{r}
 par(mfrow=c(2,2))
 hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
-hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
-hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
-plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
+```
 
+
+```{r}
+hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
+```
+
+
+```{r}
+hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
+```
+
+
+```{r}
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
+```
+
+
+```{r}
 # Model performance metrics
 data.frame(
   RMSE = RMSE(yhat, y.teste),
   Rsquare = R2(yhat, y.teste)
 )
+```
