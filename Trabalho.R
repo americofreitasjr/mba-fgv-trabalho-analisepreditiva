@@ -5,11 +5,14 @@ library(dplyr)
 library(glmnet)
 #install.packages("ISLR")
 library(ISLR)
-install.packages("caTools")
+#install.packages("caTools")
 library(caTools)
+#install.packages("randomForest")
+library(randomForest)
+
 
 #### carrego base ### 
-setwd("E:/MBA FGV/Análise Preditiva/Trabalho")
+setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
 df = read.csv("data_tratada.csv")
 
 df <- df[,-1] #Tirar a coluna X - primeira coluna, que é só um índice
@@ -19,24 +22,27 @@ hist(df$JobSatisfaction)
 boxplot(df$JobSatisfaction)
 
 #### Random Forest Classification
-install.packages("randomForest")
-library(randomForest)
-
 # Splitting the dataset into the Training set and Test set
-# install.packages('caTools')
-
 set.seed(123)
-split = sample.split(df$JobSatisfaction, SplitRatio = 0.75)
-training_set = subset(df, split == TRUE)
-test_set = subset(df, split == FALSE)
+ind <- sample(1:nrow(df), size = .75*nrow(df), replace = F)
+#split = sample.split(df$JobSatisfaction, SplitRatio = 0.75)
+training_set = df[ind,]
+test_set = df[-ind,]
 
-ind_col <- c(2,50,67,68,70,71,73)
-df_clean <- df[,-ind_col]
+# Identificando as variáveis com mais de 53 níveis (que a função randomForest não aceita) 
+ind_col <- NULL
+for (i in (1:ncol(training_set))) {
+  ifelse(length(levels(training_set[,i]))<54,ind_col[i]<-TRUE,ind_col[i]<-FALSE)   
+}
 
+# base de treino só com variáveis preditoras
+training_set_pred <- training_set[,-14]
+
+# Fazendo a floresta aleatória só com as variáveis preditoras que tenham menos de 53 níveis
 set.seed(123)
-classifier = randomForest(x = training_set[,-ind_col],
+classifier = randomForest(x = training_set_pred[,which(ind_col[-14]==TRUE)],
                           y = training_set$JobSatisfaction,
-                          ntree = 500)
+                          ntree = 100)
 
 # Predicting the Test set results
 y_pred = predict(classifier, newdata = test_set)
@@ -44,147 +50,111 @@ y_pred = predict(classifier, newdata = test_set)
 # Making the Confusion Matrix
 cm = table(test_set[,14], y_pred)
 cm_dat = data.frame(cm)
-
-# Visualising the Training set results
-set = training_set
-#pdf("../../figuras/rf_treino.pdf",width = 7, height = 7)
-X1 = seq(min(set[, 1]) - 1, max(set[, 1]) + 1, by = 0.02)
-X2 = seq(min(set[, 2]) - 1, max(set[, 2]) + 1, by = 0.02)
-grid_set = expand.grid(X1, X2)
-colnames(grid_set) = c('Age', 'EstimatedSalary')
-y_grid = predict(classifier, newdata = grid_set, type = 'class')
-plot(set[, -3],
-     main = 'Decision Tree Classification (Training set)',
-     xlab = 'Age', ylab = 'Estimated Salary',
-     xlim = range(X1), ylim = range(X2))
-contour(X1, X2, matrix(as.numeric(y_grid), length(X1), length(X2)), add = TRUE)
-points(grid_set, pch = '.', col = ifelse(y_grid == 1, 'springgreen3', 'tomato'))
-points(set, pch = 21, bg = ifelse(set[, 3] == 1, 'green4', 'red3'))
-#dev.off()
-
-# Visualising the Test set results
-set = test_set
-#pdf("../../figuras/rf_teste.pdf",width = 7, height = 7)
-X1 = seq(min(set[, 1]) - 1, max(set[, 1]) + 1, by = 0.02)
-X2 = seq(min(set[, 2]) - 1, max(set[, 2]) + 1, by = 0.02)
-grid_set = expand.grid(X1, X2)
-colnames(grid_set) = c('Age', 'EstimatedSalary')
-y_grid = predict(classifier, newdata = grid_set, type = 'class')
-plot(set[, -3],
-     main = 'Decision Tree Classification (Training set)',
-     xlab = 'Age', ylab = 'Estimated Salary',
-     xlim = range(X1), ylim = range(X2))
-contour(X1, X2, matrix(as.numeric(y_grid), length(X1), length(X2)), add = TRUE)
-points(grid_set, pch = '.', col = ifelse(y_grid == 1, 'springgreen3', 'tomato'))
-points(set, pch = 21, bg = ifelse(set[, 3] == 1, 'green4', 'red3'))
-#dev.off()
+plot(test_set[,14], y_pred)
 
 # Choosing the number of trees
 plot(classifier)
 
-####
-#### obtenho a variável dependente (y) e independentes (x)####
-y <- df$JobSatisfaction
-x <- model.matrix(JobSatisfaction ~ .,df)[,-14]
-colnames(df)
-colnames(x)
-#Split Treino e Teste
-sample_size <- floor(0.75 * nrow(df))
-ind <- sample(1:nrow(df), size = sample_size, replace = F)
-train <- df[ind,]
-test <- df[-ind,]
-
-y.treino <- y[ind]
-y.val <- y[-ind]
-x.treino <- x[ind,]
-x.val <- x[-ind,]
-#forma alternativa de fazer o split Treino e Test
-
-#split = sample.split(df$Balance, SplitRatio = 0.75)
-# train = subset(dataset, split == TRUE)
-# test = subset(dataset, split == FALSE)
-# x.treino <- model.matrix(Salary~., data=train)
-# y.treino <- train$Salary
-# 
-# x.val <- model.matrix(Salary~., data=test)
-# y.val <- test$Salary
-
-x.treino
-dim(x.treino)
-
+# Escolhendo as variáveis mais significativas, tendo como critério diminuição média na impureza dos nós (estatística de Gini)
+#install.packages("caret")
+library(caret)
+varImpPlot(classifier)
+varImp
+# Tabela com o valor da estatística de Gini em cada variável
+importance_dat = data.frame(importance(classifier))
+View(importance_dat)
 
 #######LINEAR MODEL #####
-mod = lm(Balance ~ Limit + Student, data=train)
+#Selecionadas (a princípio) as variáveis com índice de Gini > 60
+mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
+         + YearsCodedJob + HoursPerWeek + MajorUndergrad
+         #+ Currency 
+         + CompanySize
+         #+ WorkStart
+         + ResumePrompted + CompanyType + HighestEducationParents
+         + InfluenceWorkstation + Overpaid + HomeRemote,
+         data=training_set)
 print(mod)
 summary(mod)
-yhat <- predict(mod, test)
+yhat <- predict(mod, test_set)
+mean((yhat-test_set$JobSatisfaction)^2)
 
-mean((yhat-y.val)^2)
-dim(x.treino)
-dim(y.treino)
+par(mfrow=c(2,2))
+hist(training_set$JobSatisfaction, main= "Job Satisfaction - Base de treino", col="lightblue")
+hist(test_set$JobSatisfaction, main= "Job Satisfaction - Base de teste", col="lightblue")
+hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
+plot(test_set$JobSatisfaction, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 
-hist(y.treino)
-hist(y.val)
-hist(yhat)
-
-# Model performance metrics:
-
+# Model performance metrics
+#Erro médio residual 
 RMSE = function(m, o){
   sqrt(mean((m - o)^2))
 }
 
+#R2
 R2 <- function (x, y) cor(x, y) ^ 2
 
 data.frame(
-  RMSE = RMSE(yhat, y.val),
-  Rsquare = R2(yhat, y.val)
+  RMSE = RMSE(yhat, test_set$JobSatisfaction),
+  Rsquare = R2(yhat, test_set$JobSatisfaction)
 )
 
 #####LASSO##### (glmnet com alpha =1)
 
+# Definindo base de teste e treino no formato pedido pelo glmnet
+x <- model.matrix(JobSatisfaction ~ .,df)[,-1]
+x.treino <- x[ind,]
+y.treino <- df$JobSatisfaction[ind]
+x.teste <- x[-ind,]
+y.teste <- df$JobSatisfaction[-ind]
+
+# Escolha do grau de regularização (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=1)
 plot(cv.out)
 
+# Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=1, lambda=cv.out$lambda.min)
 
-
 # vamos olhar os coeficientes deste modelo e erro no conjunto de validação
-predict(lasso.mod, s =cv.out$lambda.min , type="coefficients")
+predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 
-yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.val)
-mean((yhat-y.val)^2)
+yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
+mean((yhat-y.teste)^2)
 
-hist(y.treino)
-hist(y.val)
-hist(yhat)
-# Model performance metrics:
+par(mfrow=c(2,2))
+hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
+hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
+hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 
+# Model performance metrics
 data.frame(
-  RMSE = RMSE(yhat, y.val),
-  Rsquare = R2(yhat, y.val)
+  RMSE = RMSE(yhat, y.teste),
+  Rsquare = R2(yhat, y.teste)
 )
 
-#### RIDGE ###### (mesmo que o lasso mas com alplha = 0)
-
+#### RIDGE ###### (mesmo que o lasso mas com alpha = 0)
+# Escolha do grau de regularização (lambda)
 cv.out <- cv.glmnet(x.treino, y.treino, alpha=0)
 plot(cv.out)
 
+# Modelo
 lasso.mod=glmnet(x=x.treino, y=y.treino, alpha=0, lambda=cv.out$lambda.min)
 
-
 # vamos olhar os coeficientes deste modelo e erro no conjunto de validação
-predict(lasso.mod, s =cv.out$lambda.min , type="coefficients")
+predict(lasso.mod, s= cv.out$lambda.min , type="coefficients")
 
-yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.val)
-mean((yhat-y.val)^2)
+yhat <- predict(lasso.mod, s = cv.out$lambda.min, type="response", newx=x.teste)
+mean((yhat-y.teste)^2)
 
-hist(y.treino)
-hist(y.val)
-hist(yhat)
+par(mfrow=c(2,2))
+hist(y.treino, main= "Job Satisfaction - Base de treino", col="lightblue")
+hist(y.teste, main= "Job Satisfaction - Base de teste", col="lightblue")
+hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue")
+plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 
-# Model performance metrics:
-
+# Model performance metrics
 data.frame(
-  RMSE = RMSE(yhat, y.val),
-  Rsquare = R2(yhat, y.val)
+  RMSE = RMSE(yhat, y.teste),
+  Rsquare = R2(yhat, y.teste)
 )
