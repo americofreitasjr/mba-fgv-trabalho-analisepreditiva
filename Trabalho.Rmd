@@ -5,10 +5,9 @@ output:
 ---
 
 
-
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE}
 ## Carregando as bibliotecas necessárias para a análise do modelo
 
-```{r}
 library(ggplot2)
 #install.packages("dplyr")
 library(dplyr)
@@ -30,7 +29,8 @@ library(caret)
 ### Fonte dos dados + https://github.com/alsombra/MBA-Machine_Learning
 
 ```{r}
-setwd("C:/Users/ameri/source/repos/github/americofreitasjr/mba-fgv-trabalho-analisepreditiva")
+setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
+#setwd("C:/Users/ameri/source/repos/github/americofreitasjr/mba-fgv-trabalho-analisepreditiva")
 df = read.csv("data_tratada.csv")
 
 #Retirando a coluna X - primeira coluna, que é apenas um índice
@@ -54,7 +54,7 @@ boxplot(df$JobSatisfaction)
 
 ## Classificação Floresta Aleatória
 
-### Nesta etapa estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
+### Nesta etapa, estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
 
 
 ```{r}
@@ -89,9 +89,9 @@ cm_dat = data.frame(cm)
 plot(test_set[,14], y_pred)
 ```
 
-### Escolhendo o número de árvores
+## Escolhendo o número de árvores
 
-## Ao avaliar o númrero de árvores, identificamos que a partir dos 40 níveis o modelo não tem uma melhora na performance
+### Ao avaliar o númrero de árvores, identificamos que a partir dos 40 níveis o modelo não tem uma melhora na performance
 
 ```{r}
 plot(classifier)
