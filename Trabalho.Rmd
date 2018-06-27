@@ -22,11 +22,11 @@ library(randomForest)
 #install.packages("caret")
 library(caret)
 ```
-
+# **Trabalho Análise Preditiva**
 
 ## Carregando e tratando a base que será analisada
 
-### Fonte dos dados + https://github.com/alsombra/MBA-Machine_Learning
+- Fonte dos dados: [link](https://github.com/alsombra/MBA-Machine_Learning)
 
 ```{r}
 setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
@@ -38,23 +38,23 @@ df <- df[,-1]
 
 ```
 
-## Análise Descritiva da variável resposta JobSatisfaction
+## **Análise Descritiva da variável resposta JobSatisfaction**
 
-### A satisfação não está distribuida normalmente, mostrando uma concentração de satisfação entre 6 e 8
+- A satisfação não está distribuida normalmente, mostrando uma concentração de satisfação entre 6 e 8
 
 ```{r}
 hist(df$JobSatisfaction, main = "Distribuição - JobSatisfaction")
 ```
 
-### O boxplot mostra um outlier, que neste caso não representará um problema para o modelo
+- O boxplot mostra um outlier, que neste caso não representará um problema para o modelo
 
 ```{r}
 boxplot(df$JobSatisfaction)
 ```
 
-## Classificação Floresta Aleatória
+## **Classificação Floresta Aleatória**
 
-### Nesta etapa, estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
+- Nesta etapa, estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
 
 
 ```{r}
@@ -89,16 +89,16 @@ cm_dat = data.frame(cm)
 plot(test_set[,14], y_pred)
 ```
 
-## Escolhendo o número de árvores
+## **Escolhendo o número de árvores**
 
-### Ao avaliar o númrero de árvores, identificamos que a partir dos 40 níveis o modelo não tem uma melhora na performance
+- Ao avaliar o númrero de árvores, identificamos que a partir dos 40 níveis o modelo não tem uma melhora na performance
 
 ```{r}
 plot(classifier)
 ```
 
 
-## Escolhendo as variáveis mais significativas, tendo como critério diminuição média na impureza dos nós (estatística de Gini)
+- Escolhendo as variáveis mais significativas, tendo como critério diminuição média na impureza dos nós (estatística de Gini)
 
 ```{r}
 varImpPlot(classifier)
@@ -109,7 +109,7 @@ View(importance_dat)
 ```
 
 
-## Modelo Linear
+## **Modelo Linear**
 
 
 ```{r}
@@ -173,7 +173,7 @@ data.frame(
 ```
 
 
-## Modelo LASSO (glmnet com alpha =1)
+## **Modelo LASSO (glmnet com alpha =1)**
 
 ```{r}
 #Erro médio residual 
@@ -242,6 +242,8 @@ hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue
 plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 ```
 
+### Métricas de desempenho do modelo (LASSO)
+
 
 ```{r}
 # Model performance metrics
@@ -252,7 +254,7 @@ data.frame(
 ```
 
 
-## Modelo RIDGE (mesmo que o lasso mas com alpha = 0)
+## **Modelo RIDGE (mesmo que o lasso mas com alpha = 0)**
 
 ### Escolha do grau de regularização (lambda)
 
@@ -308,7 +310,7 @@ hist(yhat, main= "Job Satisfaction - Previsão na base de teste", col="lightblue
 plot(y.teste, yhat, main= "Job Satisfaction - Base de teste vs Previsão na base de teste")
 ```
 
-### Métricas de desempenho do modelo
+### Métricas de desempenho do modelo (RIDGE)
 
 ```{r}
 # Model performance metrics
