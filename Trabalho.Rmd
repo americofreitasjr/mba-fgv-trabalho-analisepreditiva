@@ -21,6 +21,8 @@ library(caTools)
 library(randomForest)
 #install.packages("caret")
 library(caret)
+#install.packages("outliers")
+library(outliers)
 ```
 # **Trabalho Análise Preditiva**
 
@@ -40,22 +42,40 @@ df <- df[,-1]
 
 ## **Análise Descritiva da variável resposta JobSatisfaction**
 
-- A satisfação não está distribuida normalmente, mostrando uma concentração de satisfação entre 6 e 8
 
 ```{r}
 hist(df$JobSatisfaction, main = "Distribuição - JobSatisfaction")
 ```
-
-- O boxplot mostra um outlier, que neste caso não representará um problema para o modelo
+- Nota-se que a variável Job Satisfaction possui assimetria à direita, apresentando maior frequência de satisfação de grau 6 ou mais.
 
 ```{r}
 boxplot(df$JobSatisfaction)
+```
+
+- Além da assimetria já evidenciada pelo histograma, há presença de outliers na categoria JobSatisfaction = 0.Logo, faremos um teste para evidenciar se há presença de dados discrepantes.
+
+
+### Testando a presença de outliers
+```{r}
+outlier(df$JobSatisfaction)
+```
+- O teste apontou que a categoria zero de JobSatisfaction é outlier e, sendo assim a retiraremos da base de dados a ser modelada.
+
+```{r}
+df<-df[ df$JobSatisfaction != "0", , drop=FALSE]
+```
+### Novo boxplot e histograma sem outliers em JobSatisfaction
+
+```{r}
+boxplot(df$JobSatisfaction)
+hist(df$JobSatisfaction)
 ```
 
 ## **Classificação Floresta Aleatória**
 
 - Nesta etapa, estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
 
+- Como a base possui muitas variáveis, utilizaremos o Modelo de Classificação Random Forest para nos ajudar na escolha das melhores variáveis preditoras de JobSatisfacion.
 
 ```{r}
 
@@ -108,6 +128,7 @@ importance_dat = data.frame(importance(classifier))
 View(importance_dat)
 ```
 
+- A partir das variáveis preditoras pré-selecionadas pelo Modelo de Classificação Random Forest, faremos uma regressão linear:
 
 ## **Modelo Linear**
 
@@ -122,8 +143,16 @@ mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
          + ResumePrompted + CompanyType + HighestEducationParents
          + InfluenceWorkstation + Overpaid + HomeRemote,
          data=training_set)
-#print(mod)
-#summary(mod)
+```
+- O modelo linear apresentou R2 ajustado = 0.4229. O p valor associado indica que podemos rejeitar a hipótese nula. Logo, aceitamos de que as variáveis preditoras escolhidas e a Job satisfaction são relacionadas.
+
+```{r}
+print(mod)
+summary(mod)
+```
+# deu um erro no predict abaixo pois tirei jobsatisf = zero. Alguém tem uma solução ?
+
+```{r}
 yhat <- predict(mod, test_set)
 mean((yhat-test_set$JobSatisfaction)^2)
 ```
@@ -132,7 +161,7 @@ mean((yhat-test_set$JobSatisfaction)^2)
 ### Job Satisfaction - Base de treino
 
 ```{r}
-#par(mfrow=c(2,2))
+par(mfrow=c(2,2))
 hist(training_set$JobSatisfaction, main= "Job Satisfaction - Base de treino", col="lightblue")
 ```
 
@@ -171,6 +200,8 @@ data.frame(
 )
 
 ```
+
+- Aplicamos o modelo linear à base de teste. O erro RMSE associado ao modelo linear foi de 1.5167 e o R2 de 0.3693
 
 
 ## **Modelo LASSO (glmnet com alpha =1)**
@@ -252,7 +283,8 @@ data.frame(
   Rsquare = R2(yhat, y.teste)
 )
 ```
-
+- O modelo lasso indica um R2 menor do que o do modelo linear e com erro RMSE maior do que o linear. 
+- Pela análise do coeficiente de determinação e do erro associado, opto pelo modelo linear até aqui.
 
 ## **Modelo RIDGE (mesmo que o lasso mas com alpha = 0)**
 
@@ -319,3 +351,5 @@ data.frame(
   Rsquare = R2(yhat, y.teste)
 )
 ```
+- O modelo Ridge também indica um R2 menor do que o do modelo linear e com erro RMSE maior do que o linear.
+- Pela análise do coeficiente de determinação e do erro associado, optamos pelo modelo linear para prever a variável JobSatisfaction.
