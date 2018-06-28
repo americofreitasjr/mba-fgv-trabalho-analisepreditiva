@@ -31,9 +31,9 @@ library(outliers)
 - Fonte dos dados: [link](https://github.com/alsombra/MBA-Machine_Learning)
 
 ```{r}
-setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
+#setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
 #setwd("C:/Users/ameri/source/repos/github/americofreitasjr/mba-fgv-trabalho-analisepreditiva")
-df = read.csv("data_tratada.csv")
+df = read.csv("https://raw.githubusercontent.com/alsombra/MBA-Machine_Learning/master/data_tratada.csv")
 
 #Retirando a coluna X - primeira coluna, que é apenas um índice
 df <- df[,-1] 
@@ -135,7 +135,9 @@ View(importance_dat)
 
 ```{r}
 #Selecionadas (a princípio) as variáveis com índice de Gini > 60
-mod = lm(JobSatisfaction ~ CareerSatisfaction + JobSeekingStatus + YearsProgram
+mod = lm(JobSatisfaction ~ CareerSatisfaction 
+         #+ JobSeekingStatus 
+         + YearsProgram
          + YearsCodedJob + HoursPerWeek + MajorUndergrad
          #+ Currency 
          + CompanySize
@@ -161,7 +163,7 @@ mean((yhat-test_set$JobSatisfaction)^2)
 ### Job Satisfaction - Base de treino
 
 ```{r}
-par(mfrow=c(2,2))
+#par(mfrow=c(2,2))
 hist(training_set$JobSatisfaction, main= "Job Satisfaction - Base de treino", col="lightblue")
 ```
 
