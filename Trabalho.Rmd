@@ -31,13 +31,10 @@ library(outliers)
 - Fonte dos dados: [link](https://github.com/alsombra/MBA-Machine_Learning)
 
 ```{r}
-#setwd("D://OneDrive//Documentos//GOOGLE-DRIVE//MBA//07 - Analise Preditiva//dev-trabalho")
-#setwd("C:/Users/ameri/source/repos/github/americofreitasjr/mba-fgv-trabalho-analisepreditiva")
 df = read.csv("https://raw.githubusercontent.com/alsombra/MBA-Machine_Learning/master/data_tratada.csv")
 
 #Retirando a coluna X - primeira coluna, que é apenas um índice
 df <- df[,-1] 
-
 ```
 
 ## **Análise Descritiva da variável resposta JobSatisfaction**
@@ -46,6 +43,7 @@ df <- df[,-1]
 ```{r}
 hist(df$JobSatisfaction, main = "Distribuição - JobSatisfaction")
 ```
+
 - Nota-se que a variável Job Satisfaction possui assimetria à direita, apresentando maior frequência de satisfação de grau 6 ou mais.
 
 ```{r}
@@ -72,8 +70,6 @@ hist(df$JobSatisfaction)
 ```
 
 ## **Classificação Floresta Aleatória**
-
-- Nesta etapa, estamos separando de maneira aleatória os dados de treio e teste, e posteriormente aplicando o randonForest para selecionar as variáveis mais releventes. Durante o processo identificamos que o randonForest não aceita mais de 53 níveis de classificação, porém aceitamos que a acurácia do resultado não seria relevantemente afetada com apenas os 53 níveis, e prosseguimos com o modelo de treino. 
 
 - Como a base possui muitas variáveis, utilizaremos o Modelo de Classificação Random Forest para nos ajudar na escolha das melhores variáveis preditoras de JobSatisfacion.
 
@@ -122,10 +118,11 @@ plot(classifier)
 
 ```{r}
 varImpPlot(classifier)
+
 #varImp
 # Tabela com o valor da estatística de Gini em cada variável
 importance_dat = data.frame(importance(classifier))
-View(importance_dat)
+#View(importance_dat)
 ```
 
 - A partir das variáveis preditoras pré-selecionadas pelo Modelo de Classificação Random Forest, faremos uma regressão linear:
@@ -148,13 +145,11 @@ mod = lm(JobSatisfaction ~ CareerSatisfaction
 ```
 - O modelo linear apresentou R2 ajustado = 0.4229. O p valor associado indica que podemos rejeitar a hipótese nula. Logo, aceitamos de que as variáveis preditoras escolhidas e a Job satisfaction são relacionadas.
 
-```{r}
-print(mod)
-summary(mod)
-```
-# deu um erro no predict abaixo pois tirei jobsatisf = zero. Alguém tem uma solução ?
 
 ```{r}
+#print(mod)
+#summary(mod)
+
 yhat <- predict(mod, test_set)
 mean((yhat-test_set$JobSatisfaction)^2)
 ```
